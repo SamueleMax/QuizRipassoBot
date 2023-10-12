@@ -56,13 +56,13 @@ public class Bot extends TelegramLongPollingBot {
             switch (status) {
                 case RECEIVING_QUIZ:
                     QuizQuestion[] quizQuestions = QuizQuestion.parseQuiz(msgText);
+                    status = Status.NORMAL;
                     if (quizQuestions == null) {
                         sendText(id, "Il file che hai caricato non è nel formato corretto");
                     } else {
                         userId = id;
                         startQuiz(quizQuestions);
                     }
-                    status = Status.NORMAL;
                     break;
                 case RECEIVING_NEXT_ANSWER:
                     answerReceived(msgText);
