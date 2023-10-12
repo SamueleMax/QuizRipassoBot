@@ -1,9 +1,9 @@
 Qual è il paese più grande del mondo per superficie terrestre?: Russia
-Qual è il paese più piccolo del mondo per superficie terrestre?: Città del Vaticano
+Qual è il paese più piccolo del mondo per superficie terrestre?: Città del Vaticano | Vaticano
 Quale paese è noto come la "Terra del Sol Levante"?: Giappone
 Qual è il paese più popoloso del mondo?: Cina
 In quale stato degli Stati Uniti si trova la città di New York?: New York
-Qual è il paese africano noto come la "Culla dell'Umanità"?: Sudafrica
+Qual è il paese africano noto come la "Culla dell'Umanità"?: Sudafrica | Sud Africa
 Quale stato sudamericano è famoso per l'Amazzonia, la foresta pluviale più grande del mondo?: Brasile
 Qual è il paese che ha la forma di una "stivale" e si trova nel sud dell'Europa?: Italia
 Qual è la capitale dell'Australia?: Canberra
