@@ -11,10 +11,9 @@ public class Bot extends TelegramLongPollingBot {
     enum Status {
         NORMAL,
         RECEIVING_QUIZ,
-        RECEIVING_NEXT_ANSWER
+        RECEIVING_NEXT_ANSWER,
     }
 
-    long userId;
     Status status = Status.NORMAL;
     int quizLength;
     int correctAnswers;
@@ -41,10 +40,10 @@ public class Bot extends TelegramLongPollingBot {
         if (msg.isCommand()) {
             switch (msgText) {
                 case "/stop":
-                    endQuiz();
+                    endQuiz(id);
                     break;
                 case "/newquiz":
-                    sendText(id, "Questo comando non è ancora stato implementato :(");
+                    sendText(id, "Questa funzionalità non è ancora stata implementata");
                     break;
                 case "/loadquiz":
                     status = Status.RECEIVING_QUIZ;
@@ -61,12 +60,11 @@ public class Bot extends TelegramLongPollingBot {
                     if (quizQuestions == null) {
                         sendText(id, "Il file che hai caricato non è nel formato corretto");
                     } else {
-                        userId = id;
-                        startQuiz(quizQuestions);
+                        startQuiz(id, quizQuestions);
                     }
                     break;
                 case RECEIVING_NEXT_ANSWER:
-                    answerReceived(msgText);
+                    answerReceived(id, msgText);
                     break;
             }
         }
@@ -83,25 +81,25 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    void startQuiz(QuizQuestion[] quizQuestions) {
+    void startQuiz(Long userId, QuizQuestion[] quizQuestions) {
         quizLength = quizQuestions.length;
         correctAnswers = 0;
         currentQuizPosition = 0;
         currentQuizQuestions = quizQuestions;
         sendText(userId, String.format("Il quiz è cominciato! Ci sono %s domande. Buona fortuna!", quizLength));
-        nextQuestion();
+            nextQuestion(userId);
     }
 
-    void nextQuestion() {
+    void nextQuestion(long userId) {
         if (currentQuizPosition >= quizLength) {
-            endQuiz();
+            endQuiz(userId);
         } else {
             sendText(userId, currentQuizQuestions[currentQuizPosition].question);
             status = Status.RECEIVING_NEXT_ANSWER;
         }
     }
 
-    void answerReceived(String answer) {
+    void answerReceived(long userId, String answer) {
         QuizQuestion currentQuizQuestion = currentQuizQuestions[currentQuizPosition];
         if (currentQuizQuestion.checkAnswer(answer)) {
             sendText(userId, "Risposta corretta!");
@@ -114,15 +112,16 @@ public class Bot extends TelegramLongPollingBot {
             }
         }
         currentQuizPosition++;
-        nextQuestion();
+        nextQuestion(userId);
     }
 
-    void endQuiz() {
+    void endQuiz(long userId) {
         if (status == Status.NORMAL) {
             sendText(userId, "Non c'è nessun quiz da terminare.");
             return;
         }
         sendText(userId, String.format("Il quiz è terminato. Hai risposto correttamente a %s domande su %s.", correctAnswers, quizLength));
+        status = Status.NORMAL;
     }
 
     public static void main(String[] args) throws TelegramApiException {
