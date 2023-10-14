@@ -3,9 +3,7 @@ package org.quizripassobot;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -15,12 +13,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
     enum Status {
         NORMAL,
+        INFO,
         RECEIVING_QUIZ,
         RECEIVING_NEXT_ANSWER,
     }
@@ -86,6 +84,7 @@ public class Bot extends TelegramLongPollingBot {
             var query = update.getCallbackQuery();
             String data = query.getData();
             long id = query.getFrom().getId();
+            String queryId = query.getId();
             switch (data) {
                 case "stop":
                     endQuiz(id);
@@ -94,6 +93,13 @@ public class Bot extends TelegramLongPollingBot {
                     status = Status.RECEIVING_QUIZ;
                     sendText(id, "Carica un file di quiz compatibile");
                     break;
+            }
+            var closeQuery = new AnswerCallbackQuery();
+            closeQuery.setCallbackQueryId(queryId);
+            try {
+                execute(closeQuery);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -116,20 +122,23 @@ public class Bot extends TelegramLongPollingBot {
         correctAnswers = 0;
         currentQuizPosition = 0;
         currentQuizQuestions = quizQuestions;
+        status = Status.INFO;
         sendText(userId, String.format("Il quiz è cominciato! Ci sono %s domande. Buona fortuna!", quizLength));
-            nextQuestion(userId);
+        status = Status.RECEIVING_NEXT_ANSWER;
+        nextQuestion(userId);
     }
 
     void nextQuestion(long userId) {
         if (currentQuizPosition >= quizLength) {
             endQuiz(userId);
         } else {
-            sendText(userId, currentQuizQuestions[currentQuizPosition].question);
             status = Status.RECEIVING_NEXT_ANSWER;
+            sendText(userId, currentQuizQuestions[currentQuizPosition].question);
         }
     }
 
     void answerReceived(long userId, String answer) {
+        status = Status.INFO;
         QuizQuestion currentQuizQuestion = currentQuizQuestions[currentQuizPosition];
         if (currentQuizQuestion.checkAnswer(answer)) {
             sendText(userId, "Risposta corretta!");
@@ -150,8 +159,8 @@ public class Bot extends TelegramLongPollingBot {
             sendText(userId, "Non c'è nessun quiz da terminare.");
             return;
         }
-        sendText(userId, String.format("Il quiz è terminato. Hai risposto correttamente a %s domande su %s.", correctAnswers, quizLength));
         status = Status.NORMAL;
+        sendText(userId, String.format("Il quiz è terminato. Hai risposto correttamente a %s domande su %s.", correctAnswers, quizLength));
     }
 
     InlineKeyboardMarkup getKeyboard() {
@@ -164,14 +173,10 @@ public class Bot extends TelegramLongPollingBot {
                 loadQuizButton.setCallbackData("loadquiz");
                 keyboardRows.add(new ArrayList<>(List.of(loadQuizButton)));
                 break;
-            case RECEIVING_QUIZ:
-                var stopButton = new InlineKeyboardButton();
-                stopButton.setText("Stop");
-                stopButton.setCallbackData("stop");
-                keyboardRows.add(new ArrayList<>(List.of(stopButton)));
+            case INFO:
                 break;
-            case RECEIVING_NEXT_ANSWER:
-                stopButton = new InlineKeyboardButton();
+            case RECEIVING_QUIZ, RECEIVING_NEXT_ANSWER:
+                var stopButton = new InlineKeyboardButton();
                 stopButton.setText("Stop");
                 stopButton.setCallbackData("stop");
                 keyboardRows.add(new ArrayList<>(List.of(stopButton)));
