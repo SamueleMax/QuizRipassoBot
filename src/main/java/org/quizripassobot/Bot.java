@@ -55,7 +55,17 @@ public class Bot extends TelegramLongPollingBot {
                         endQuiz(id);
                         break;
                     case "/newquiz":
-                        sendText(id, "Questa funzionalità non è ancora stata implementata");
+                        sendText(id, """
+                                Puoi creare un nuovo quiz con qualsiasi editor di testo, basta che sia nel sequente formato:
+                                <Domanda1>: <Risposta1>
+                                <Domanda2>: <Risposta2>
+                                O in alternativa, se ci sono più risposte corrette:
+                                <Domanda>: <Risposta1> | <Risposta2> | <Risposta3>
+                                
+                                Ecco un esempio:
+                                Qual è il pase più grande del mondo?: Russia
+                                Qual è il paese più piccolo del mondo?: Vaticano | Città del Vaticano
+                                """);
                         break;
                     case "/loadquiz":
                         status = Status.RECEIVING_QUIZ;
