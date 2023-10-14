@@ -1,0 +1,9 @@
+=== Da fare ===
+- Tradurre i pulsanti
+
+=== Idee ===
+- Implementare un sistema di "database" che abbia una libreria di quiz già pronta all'uso e l'utente possa scegliere
+   di fare un quiz già preparato all'interno di questa libreria
+- Implementare dei quiz a tempo, dove hai un determinato limite di tempo. Si potrebbe fare prendendo datetime di
+  quando l'utente inizia e controllare ogni volta quanto rimane
+- Implementare che le domande possano essere vero/falso oppure a multiple choice
