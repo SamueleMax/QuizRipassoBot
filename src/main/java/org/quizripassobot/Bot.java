@@ -179,7 +179,7 @@ public class Bot extends TelegramLongPollingBot {
         switch (status) {
             case NORMAL:
                 var loadQuizButton = new InlineKeyboardButton();
-                loadQuizButton.setText("Load quiz");
+                loadQuizButton.setText("Carica quiz");
                 loadQuizButton.setCallbackData("loadquiz");
                 keyboardRows.add(new ArrayList<>(List.of(loadQuizButton)));
                 break;

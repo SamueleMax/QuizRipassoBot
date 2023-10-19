@@ -1,6 +1,3 @@
-=== Da fare ===
-- Tradurre i pulsanti
-
 === Idee ===
 - Implementare un sistema di "database" che abbia una libreria di quiz già pronta all'uso e l'utente possa scegliere
    di fare un quiz già preparato all'interno di questa libreria
