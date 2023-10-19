@@ -165,12 +165,18 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     void endQuiz(long userId) {
-        if (status == Status.NORMAL) {
-            sendText(userId, "Non c'è nessun quiz da terminare.");
-            return;
+        switch (status) {
+            case NORMAL:
+                sendText(userId, "Non c'è nessun quiz da terminare.");
+                break;
+            case RECEIVING_QUIZ:
+                status = Status.NORMAL;
+                sendText(userId, "Caricamento annullato.");
+                break;
+            default:
+                status = Status.NORMAL;
+                sendText(userId, String.format("Il quiz è terminato. Hai risposto correttamente a %s domande su %s.", correctAnswers, quizLength));
         }
-        status = Status.NORMAL;
-        sendText(userId, String.format("Il quiz è terminato. Hai risposto correttamente a %s domande su %s.", correctAnswers, quizLength));
     }
 
     InlineKeyboardMarkup getKeyboard() {
@@ -179,7 +185,7 @@ public class Bot extends TelegramLongPollingBot {
         switch (status) {
             case NORMAL:
                 var loadQuizButton = new InlineKeyboardButton();
-                loadQuizButton.setText("Carica quiz");
+                loadQuizButton.setText("Load quiz");
                 loadQuizButton.setCallbackData("loadquiz");
                 keyboardRows.add(new ArrayList<>(List.of(loadQuizButton)));
                 break;

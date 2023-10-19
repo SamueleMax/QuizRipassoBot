@@ -1,0 +1,3 @@
+Che bandiera ha forma quadrata?: Svizzera
+Che bandiera ha la forma di triangolare?: Nepal | Nepalese
+Quante stelle ha la bandiera degli Stati Uniti?: 50 | Cinquanta
